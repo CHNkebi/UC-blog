@@ -36,7 +36,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ResponseResult listArticle(PageParams pageParams) {
         //1. 这个是分页查询的类（代表着分离模式），要传入的是页面的页数和页面总数
-        Page<Article> page = new Page<Article>(pageParams.getPage(),pageParams.getSize());
+        Page<Article> page = new Page<>(pageParams.getPage(),pageParams.getSize());
         //2. LambdaQueryWrapper是MybatisPlus提供的，需要就导入这个包就可以了
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         //3. 这里是根据字体排序

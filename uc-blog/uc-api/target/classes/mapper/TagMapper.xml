@@ -4,8 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ty.dao.TagMapper">
     <select id="selectTagsByArticleId" parameterType="java.lang.Long" resultType="com.ty.domain.pojo.Tag">
-        select id, avater, tag_name tagName from ms_tag
+        select id, avater, tag_name tagName from uc_tag
         where id in
-        (select tag_id from ms_article_tag where article_id = #{artocleId})
+        (select tag_id from uc_article_tag where article_id = #{artocleId})
+    </select>
+
+    <select id="findHotsTagIds" parameterType="int" resultType="java.lang.Long">
+        select tag_id from `uc_article_tag` group by tag_id order by count(*) desc limit #{limit}
+    </select>
+
+    <select id="findTagsByTagIds" parameterType="list" resultType="com.ty.domain.pojo.Tag">
+        select id, tag_name tagName from uc_tag
+        where id in 
+        <foreach collection="tagIds" item="tagId" separator="," open="(" close=")">
+            #{tagId}
+        </foreach>
     </select>
 </mapper>

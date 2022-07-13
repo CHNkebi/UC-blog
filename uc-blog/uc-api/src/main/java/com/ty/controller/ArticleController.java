@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 
 
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("articles")
 public class ArticleController {
 
     @Resource
