@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.dao.ArticleMapper">
+    <select id="listArchives" resultType="com.ty.dao.dos.Archives">
+        select year(create_date) as year, month(create_date) as month, count(*) as count from uc_article
+        group by year, month
+    </select>
+</mapper>

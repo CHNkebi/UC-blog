@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseResult<T> {
+public class Result<T> {
     /**
      * 成功标识
      * */
@@ -25,12 +25,12 @@ public class ResponseResult<T> {
      */
     private T data;
 
-    public static ResponseResult success(Object data) {
-        return new ResponseResult(true, 200, "success", data);
+    public static Result success(Object data) {
+        return new Result(true, 200, "success", data);
     }
 
-    public static ResponseResult fail(int code, String msg) {
-        return new ResponseResult(false, code, msg, null);
+    public static Result fail(int code, String msg) {
+        return new Result(false, code, msg, null);
     }
 }
 
