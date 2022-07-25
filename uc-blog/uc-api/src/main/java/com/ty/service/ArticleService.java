@@ -1,7 +1,7 @@
 package com.ty.service;
 
 import com.ty.domain.http.Result;
-import com.ty.domain.param.PageParams;
+import com.ty.domain.vo.param.PageParams;
 
 public interface ArticleService {
     /**

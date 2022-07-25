@@ -2,7 +2,7 @@ package com.ty.controller;
 
 
 import com.ty.domain.http.Result;
-import com.ty.domain.param.PageParams;
+import com.ty.domain.vo.param.PageParams;
 import com.ty.service.ArticleService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

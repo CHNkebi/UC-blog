@@ -1,4 +1,4 @@
-package com.ty.domain.param;
+package com.ty.domain.vo.param;
 
 import lombok.Data;
 

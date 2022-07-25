@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ty.dao.ArticleMapper;
 import com.ty.dao.dos.Archives;
 import com.ty.domain.http.Result;
-import com.ty.domain.param.PageParams;
+import com.ty.domain.vo.param.PageParams;
 import com.ty.domain.pojo.Article;
 import com.ty.domain.vo.ArticleVo;
 import com.ty.service.ArticleService;

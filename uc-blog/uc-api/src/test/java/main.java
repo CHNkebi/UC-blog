@@ -1,4 +1,5 @@
 import com.ty.dao.ArticleMapper;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +12,6 @@ public class main {
 
    @Test
    public void test() {
-      System.out.println(articleMapper.selectById(1));
+      System.out.println(DigestUtils.md5Hex("admintyuc!@#$%"));
    }
 }

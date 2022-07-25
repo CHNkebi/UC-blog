@@ -1,6 +1,9 @@
 server:
   port: 8888
 spring:
+  main:
+    #解决因循环引用导致启动报错的问题
+    allow-circular-references: true
   application:
     name: UC-blog
   datasource:
