@@ -77,4 +77,45 @@ public class LoginServiceImpl implements LoginService {
         redisCache.deleteObject("TOKEN_"+token);
         return Result.success(null);
     }
+
+    @Override
+    public Result register(LoginParam loginParam) {
+        /**
+         * 1.判断参数是否合法
+         * 2.判断账户是否存在, 存在 返回已经被注册
+         * 3.如果账户不存在 注册用户
+         * 4.生成token
+         * 5.传入redis并返回
+         * 6.加上事务 一旦中间的任何过程出现问题 注册的用户需要回滚
+         */
+        String account = loginParam.getAccount();
+        String password = loginParam.getPassword();
+        String nickname = loginParam.getNickname();
+        if(StringUtils.isBlank(account) || StringUtils.isBlank(password) || StringUtils.isBlank(nickname))
+            return Result.fail(ErrorCode.PARAMS_ERROR.getCode(), ErrorCode.PARAMS_ERROR.getMsg());
+        SysUser sysUser = sysUserService.findUserByAccount(account);
+
+        if(!Objects.isNull(sysUser))
+            return Result.fail(ErrorCode.ACCOUNT_EXIST.getCode(), ErrorCode.ACCOUNT_EXIST.getMsg());
+
+        sysUser = new SysUser();
+        sysUser.setAccount(account);                                   //账户名
+        sysUser.setNickname(nickname);                                  //昵称
+        sysUser.setPassword(DigestUtils.md5Hex(password + slat));  //密码加盐md5
+        sysUser.setCreateDate(System.currentTimeMillis());              //创建时间
+        sysUser.setLastLogin(System.currentTimeMillis());               //最后登录时间
+        sysUser.setAvatar("/static/img/logo.b3a48c0.png");              //头像
+        sysUser.setAdmin(1);                                             //管理员权限
+        sysUser.setDeleted(0);                                             //假删除
+        sysUser.setSalt("");                                                //盐
+        sysUser.setStatus("");                                              //状态
+        sysUser.setEmail("");                                               //邮箱
+        sysUserService.save(sysUser);
+
+        String token = JWTUtils.createToken(sysUser.getId());
+
+        redisCache.setCacheObject("TOKEN_"+token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
+
+        return Result.success(token);
+    }
 }
