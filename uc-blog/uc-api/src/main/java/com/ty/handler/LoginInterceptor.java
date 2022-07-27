@@ -7,6 +7,7 @@ import com.ty.domain.http.Result;
 import com.ty.domain.pojo.SysUser;
 import com.ty.domain.vo.ErrorCode;
 import com.ty.service.LoginService;
+import com.ty.utils.UserThreadLocal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -34,7 +35,7 @@ public class LoginInterceptor implements HandlerInterceptor {
          * 4.如果token为不为空, 登录验证 checkToken
          * 5.认证成功 放行
          */
-        if(handler instanceof HandlerMethod) {
+        if(!(handler instanceof HandlerMethod)) {
             //handler 可能是 RequestResourceHandler
             //springboot 程序访问静态资源 默认去classpath下的static目录查询
             return true;
@@ -65,6 +66,17 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        UserThreadLocal.put(sysUser);
+
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        //如果不删除ThreadLocal中用完的信息 会有内存泄露的风险
+
+        //ThreadLocal的 key为弱引用 value为线程变量的副本与线程同生命周期
+        //垃圾回收期会回收弱引用对象 key被回收 但value仍然存在于内存中 导致内存泄露
+        UserThreadLocal.remove();
     }
 }

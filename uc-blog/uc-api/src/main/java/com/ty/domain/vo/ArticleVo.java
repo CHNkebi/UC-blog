@@ -23,11 +23,9 @@ public class ArticleVo {
 
     private String author;
 
-//暂时不需要
-//    private ArticleBodyVo body;
+    private ArticleBodyVo body;
 
     private List<TagVo> tags;
 
-//暂时不需要
-//    private List<CategoryVo> categories;
+    private CategoryVo category;
 }

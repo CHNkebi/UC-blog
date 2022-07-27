@@ -4,10 +4,7 @@ package com.ty.controller;
 import com.ty.domain.http.Result;
 import com.ty.domain.vo.param.PageParams;
 import com.ty.service.ArticleService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -57,4 +54,16 @@ public class ArticleController {
     public Result listArchives() {
         return articleService.listArchives();
     }
+
+    /**
+     * 查看文章详情
+     * @param articleId
+     * @return
+     */
+    @PostMapping("view/{id}")
+    public  Result findArticleById(@PathVariable("id") Long articleId){
+        return articleService.findArticleById(articleId);
+
+    }
+
 }
