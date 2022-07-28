@@ -50,14 +50,6 @@ public class LoginInterceptor implements HandlerInterceptor {
         log.info("token:{}",token);
         log.info("=============request end===================");
 
-
-        if(StringUtils.isBlank(token)) {
-            Result result = Result.fail(ErrorCode.NO_LOGIN.getCode(), "未登录");
-            response.setContentType("application/json;charset=utf-8");
-            response.getWriter().print(JSON.toJSONString(result));
-            return false;
-        }
-
         SysUser sysUser = loginService.checkToken(token);
         if (Objects.isNull(sysUser)) {
             Result result = Result.fail(ErrorCode.NO_LOGIN.getCode(), "未登录");
@@ -67,6 +59,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         UserThreadLocal.put(sysUser);
+        System.out.println("拦截器运行");
 
         return true;
     }

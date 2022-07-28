@@ -13,11 +13,11 @@ public class ArticleVo {
 
     private String summary;  //简介
 
-    private int commentCounts;
+    private Integer commentCounts;
 
-    private int ViewCounts;
+    private Integer ViewCounts;
 
-    private int weight;   //置顶
+    private Integer weight;   //置顶
 
     private String createDate;  //创建时间
 

@@ -2,6 +2,7 @@ package com.ty.service;
 
 import com.ty.domain.http.Result;
 import com.ty.domain.pojo.SysUser;
+import com.ty.domain.vo.UserVo;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -41,4 +42,11 @@ public interface SysUserService {
      * @param sysUser
      */
     void save(SysUser sysUser);
+
+    /**
+     * 根据id查询UserVo
+     * @param id
+     * @return
+     */
+    UserVo findUserVoById(Long id);
 }
