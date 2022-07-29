@@ -25,6 +25,7 @@ public class MebMvcConfig implements WebMvcConfigurer {
         //拦截test接口
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/test")
-                .addPathPatterns("/comments/create/change");
+                .addPathPatterns("/comments/create/change")
+                .addPathPatterns("/articles/publish");
     }
 }

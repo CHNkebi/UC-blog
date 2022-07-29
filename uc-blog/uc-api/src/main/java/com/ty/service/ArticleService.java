@@ -1,6 +1,7 @@
 package com.ty.service;
 
 import com.ty.domain.http.Result;
+import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
 
 public interface ArticleService {
@@ -37,4 +38,11 @@ public interface ArticleService {
      * @return
      */
     Result findArticleById(Long articleId);
+
+    /**
+     * 文章发布服务
+     * @param articleParam
+     * @return
+     */
+    Result publish(ArticleParam articleParam);
 }

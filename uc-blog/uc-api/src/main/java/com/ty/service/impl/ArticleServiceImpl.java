@@ -5,21 +5,26 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ty.dao.ArticleBodyMapper;
 import com.ty.dao.ArticleMapper;
+import com.ty.dao.ArticleTagMapper;
 import com.ty.dao.dos.Archives;
 import com.ty.domain.http.Result;
 import com.ty.domain.pojo.ArticleBody;
+import com.ty.domain.pojo.ArticleTag;
+import com.ty.domain.pojo.SysUser;
 import com.ty.domain.vo.ArticleBodyVo;
+import com.ty.domain.vo.TagVo;
+import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
 import com.ty.domain.pojo.Article;
 import com.ty.domain.vo.ArticleVo;
 import com.ty.service.*;
+import com.ty.utils.UserThreadLocal;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -33,6 +38,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private ArticleTagMapper articleTagMapper;
 
     @Override
     public Result listArticle(PageParams pageParams) {
@@ -100,6 +108,53 @@ public class ArticleServiceImpl implements ArticleService {
         threadService.updateArticleViewCount(articleMapper, article);
 
         return Result.success(articleVo);
+    }
+
+    @Override
+    public Result publish(ArticleParam articleParam) {
+        //此接口要加入到登录拦截当中
+        SysUser sysUser = UserThreadLocal.get();
+        /**
+         * 1.发布文章 构建Article对象
+         * 2.作者id 登录用户
+         * 3.标签 要将标签加入到关联列表当中
+         */
+        Article article = new Article();
+        article.setAuthorId(sysUser.getId());
+        article.setWeight(Article.Article_Common);
+        article.setViewCounts(0);
+        article.setTitle(articleParam.getTitle());
+        article.setSummary(articleParam.getSummary());
+        article.setCommentCounts(0);
+        article.setCreateDate(System.currentTimeMillis());
+        article.setCategoryId(articleParam.getCategory().getId());
+
+        //插入生成文章id
+        articleMapper.insert(article);
+        Long articleId = article.getId();
+        //tag
+        List<TagVo> tags = articleParam.getTags();
+        if(!Objects.isNull(tags)) {
+            for(TagVo tag : tags) {
+                ArticleTag articleTag = new ArticleTag();
+                articleTag.setArticleId(articleId);
+                articleTag.setTagId(tag.getId());
+                articleTagMapper.insert(articleTag);
+            }
+        }
+        //body
+        ArticleBody articleBody = new ArticleBody();
+        articleBody.setArticleId(articleId);
+        articleBody.setContent(articleParam.getBody().getContent());
+        articleBody.setContentHtml(articleParam.getBody().getContentHtml());
+        articleBodyMapper.insert(articleBody);
+        article.setBodyId(articleBody.getId());
+        articleMapper.updateById(article);//再次更新 否则body无法存入数据库
+
+        Map<String, String> map = new HashMap<>();
+        map.put("id",articleId.toString());//返回string（精度损失）
+
+        return Result.success(map);
     }
 
 

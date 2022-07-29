@@ -1,6 +1,8 @@
 package com.ty.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ty.dao.CategoryMapper;
+import com.ty.domain.http.Result;
 import com.ty.domain.pojo.Category;
 import com.ty.domain.vo.CategoryVo;
 import com.ty.service.CategoryService;
@@ -8,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -21,5 +25,25 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryVo categoryVo = new CategoryVo();
         BeanUtils.copyProperties(category, categoryVo);
         return categoryVo;
+    }
+
+    @Override
+    public Result findAll() {
+        List<Category> categories = categoryMapper.selectList(new LambdaQueryWrapper<>());
+        //页面交互对象
+        return Result.success(copyList(categories));
+    }
+    public CategoryVo copy(Category category){
+        CategoryVo categoryVo = new CategoryVo();
+        BeanUtils.copyProperties(category,categoryVo);
+        //categoryVo.setId(String.valueOf(category.getId()));
+        return categoryVo;
+    }
+    public List<CategoryVo> copyList(List<Category> categoryList){
+        List<CategoryVo> categoryVoList = new ArrayList<>();
+        for (Category category : categoryList) {
+            categoryVoList.add(copy(category));
+        }
+        return categoryVoList;
     }
 }

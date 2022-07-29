@@ -2,6 +2,7 @@ package com.ty.controller;
 
 
 import com.ty.domain.http.Result;
+import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
 import com.ty.service.ArticleService;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +65,12 @@ public class ArticleController {
     public  Result findArticleById(@PathVariable("id") Long articleId){
         return articleService.findArticleById(articleId);
 
+    }
+
+
+    @PostMapping("publish")
+    public Result publish(@RequestBody ArticleParam articleParam) {
+        return articleService.publish(articleParam);
     }
 
 }

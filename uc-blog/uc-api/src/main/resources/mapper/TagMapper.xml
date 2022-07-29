@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ty.dao.TagMapper">
     <select id="selectTagsByArticleId" parameterType="java.lang.Long" resultType="com.ty.domain.pojo.Tag">
-        select id, avater, tag_name tagName from uc_tag
+        select id, avatar, tag_name tagName from uc_tag
         where id in
         (select tag_id from uc_article_tag where article_id = #{artocleId})
     </select>
