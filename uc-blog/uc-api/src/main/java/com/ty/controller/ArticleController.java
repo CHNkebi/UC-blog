@@ -1,6 +1,7 @@
 package com.ty.controller;
 
 
+import com.ty.common.aop.LogAnnotation;
 import com.ty.domain.http.Result;
 import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
@@ -23,6 +24,7 @@ public class ArticleController {
      * @return
      */
     @PostMapping
+    @LogAnnotation(module="文章", operator="获取文章列表")
     public Result listArticle(@RequestBody PageParams pageParams) {
         return articleService.listArticle(pageParams);
     }
