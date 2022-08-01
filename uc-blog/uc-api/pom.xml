@@ -137,6 +137,12 @@
             <version>[7.7.0, 7.7.99]</version>
         </dependency>
 
+        <!--SpringCache-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
 
         <!--jaxb—api-->
         <dependency>

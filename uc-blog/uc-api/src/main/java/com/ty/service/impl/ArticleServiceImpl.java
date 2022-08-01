@@ -2,6 +2,7 @@ package com.ty.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ty.dao.ArticleBodyMapper;
 import com.ty.dao.ArticleMapper;
@@ -42,27 +43,56 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleTagMapper articleTagMapper;
 
+//    @Override
+//    public Result listArticle(PageParams pageParams) {
+//        //1. 这个是分页查询的类（代表着分离模式），要传入的是页面的页数和页面总数
+//        Page<Article> page = new Page<>(pageParams.getPageNum(),pageParams.getPageSize());
+//        //2. LambdaQueryWrapper
+//        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+//        //判断类型筛选
+//        if(pageParams.getCategoryId() != null)
+//            queryWrapper.eq(Article::getCategoryId, pageParams.getCategoryId());
+//        //判断标签筛选
+//        List<Long> articleIdList = new ArrayList<>();
+//        if(pageParams.getTagId() != null) {
+//            //article_tag
+//            LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+//            articleTagLambdaQueryWrapper.eq(ArticleTag::getTagId, pageParams.getTagId());
+//            List<ArticleTag> articleTags = articleTagMapper.selectList(articleTagLambdaQueryWrapper);
+//            for(ArticleTag articleTag : articleTags)
+//                articleIdList.add(articleTag.getArticleId());
+//            if(articleIdList.size() > 0)
+//                queryWrapper.in(Article::getId, articleIdList);
+//        }
+//        //3. 这里是根据字体排序
+//        //queryWrapper.orderByDesc(Article::getWeight);
+//        //4. 这里设置的是根据时间排序
+//        //queryWrapper.orderByDesc(Article::getCreateDate);
+//        //5. 这个方法    default Children orderByDesc(boolean condition, R column, R... columns) {是可变长参数的
+//        queryWrapper.orderByDesc(Article::getWeight,Article::getCreateDate);
+//        // 因为articleMapper继承了BaseMapper了的，所有设查询的参数和查询出来的排序方式
+//        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
+//        //这个就是我们查询出来的数据的数组了
+//        List<Article> records = articlePage.getRecords();
+//        //因为页面展示出来的数据不一定和数据库一样，所有我们要做一个转换
+//        //将在查出数据库的数组复制到articleVo中实现解耦合,vo和页面数据交互
+//        List<ArticleVo> articleVoList = copyList(records, true, true);
+//        return Result.success(articleVoList);
+//    }
+
     @Override
     public Result listArticle(PageParams pageParams) {
-        //1. 这个是分页查询的类（代表着分离模式），要传入的是页面的页数和页面总数
-        Page<Article> page = new Page<>(pageParams.getPage(),pageParams.getSize());
-        //2. LambdaQueryWrapper是MybatisPlus提供的，需要就导入这个包就可以了
-        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
-        //3. 这里是根据字体排序
-        //queryWrapper.orderByDesc(Article::getWeight);
-        //4. 这里设置的是根据时间排序
-        //queryWrapper.orderByDesc(Article::getCreateDate);
-        //5. 这个方法    default Children orderByDesc(boolean condition, R column, R... columns) {是可变长参数的
-        queryWrapper.orderByDesc(Article::getWeight,Article::getCreateDate);
-        // 因为articleMapper继承了BaseMapper了的，所有设查询的参数和查询出来的排序方式
-        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
-        //这个就是我们查询出来的数据的数组了
-        List<Article> records = articlePage.getRecords();
-        //因为页面展示出来的数据不一定和数据库一样，所有我们要做一个转换
-        //将在查出数据库的数组复制到articleVo中实现解耦合,vo和页面数据交互
-        List<ArticleVo> articleVoList = copyList(records, true, true);
-        return Result.success(articleVoList);
+        Page<Article> page = new Page<>(pageParams.getPage(),pageParams.getPageSize());
+        IPage<Article> articleIPage = articleMapper.listAticle(
+                page,
+                pageParams.getCategoryId(),
+                pageParams.getTagId(),
+                pageParams.getYear(),
+                pageParams.getMonth());
+        List<Article> recordes = articleIPage.getRecords();
+        return Result.success(copyList(recordes,true,true));
     }
+
 
     @Override
     public Result hotArticle(int limit) {
@@ -127,7 +157,7 @@ public class ArticleServiceImpl implements ArticleService {
         article.setSummary(articleParam.getSummary());
         article.setCommentCounts(0);
         article.setCreateDate(System.currentTimeMillis());
-        article.setCategoryId(articleParam.getCategory().getId());
+        article.setCategoryId(Long.valueOf(articleParam.getCategory().getId()));
 
         //插入生成文章id
         articleMapper.insert(article);
@@ -138,7 +168,7 @@ public class ArticleServiceImpl implements ArticleService {
             for(TagVo tag : tags) {
                 ArticleTag articleTag = new ArticleTag();
                 articleTag.setArticleId(articleId);
-                articleTag.setTagId(tag.getId());
+                articleTag.setTagId(Long.valueOf(tag.getId()));
                 articleTagMapper.insert(articleTag);
             }
         }
@@ -179,6 +209,7 @@ public class ArticleServiceImpl implements ArticleService {
     //这个方法是主要点是BeanUtils，由Spring提供的，专门用来拷贝的，想Article和articlevo相同属性的拷贝过来返回
     private ArticleVo copy(Article article, boolean isTag, boolean isAuthor, boolean isBody, boolean isCategory) {
         ArticleVo articleVo = new ArticleVo();
+        articleVo.setId(String.valueOf(article.getId()));
         BeanUtils.copyProperties(article,articleVo);
         articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
         if(isTag) {

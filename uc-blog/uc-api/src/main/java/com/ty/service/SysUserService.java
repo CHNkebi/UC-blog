@@ -5,6 +5,8 @@ import com.ty.domain.pojo.SysUser;
 import com.ty.domain.vo.UserVo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Transactional
 public interface SysUserService {
 
@@ -49,4 +51,11 @@ public interface SysUserService {
      * @return
      */
     UserVo findUserVoById(Long id);
+
+    /**
+     * 修改用户属性
+     * @param info
+     * @return
+     */
+    boolean modifyUser(Map<String, Object> info);
 }

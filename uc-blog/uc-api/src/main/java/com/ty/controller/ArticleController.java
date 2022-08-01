@@ -6,6 +6,7 @@ import com.ty.domain.http.Result;
 import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
 import com.ty.service.ArticleService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ public class ArticleController {
      */
     @PostMapping
     @LogAnnotation(module="文章", operator="获取文章列表")
+    @Cacheable(value = "list_Article", keyGenerator = "selfKeyGenerate")
     public Result listArticle(@RequestBody PageParams pageParams) {
         return articleService.listArticle(pageParams);
     }
@@ -34,6 +36,7 @@ public class ArticleController {
      * @return
      */
     @PostMapping("hot")
+    @Cacheable(value = "hot_Article", keyGenerator = "selfKeyGenerate")
     public Result hotArticle() {
         int limit = 5;
         return articleService.hotArticle(limit);
@@ -44,6 +47,7 @@ public class ArticleController {
      * @return
      */
     @PostMapping("new")
+    @Cacheable(value = "new_Article", keyGenerator = "selfKeyGenerate")
     public Result newArticle() {
         int limit = 5;
         return articleService.newArticle(limit);

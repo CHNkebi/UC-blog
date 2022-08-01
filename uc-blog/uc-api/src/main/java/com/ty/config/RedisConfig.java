@@ -1,6 +1,6 @@
 package com.ty.config;
 
-import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
+import com.ty.utils.FastJsonRedisSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

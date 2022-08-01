@@ -9,8 +9,7 @@ import java.util.List;
 @Data
 public class CommentVo {
 
-    @JsonSerialize(using = ToStringSerializer.class)//解决前端精度损失问题
-    private Long id;
+    private String id;
 
     private UserVo author;
 

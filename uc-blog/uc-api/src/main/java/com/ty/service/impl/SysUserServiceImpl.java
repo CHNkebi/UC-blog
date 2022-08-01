@@ -10,12 +10,17 @@ import com.ty.domain.vo.LoginUserVo;
 import com.ty.domain.vo.UserVo;
 import com.ty.service.LoginService;
 import com.ty.service.SysUserService;
+import com.ty.service.ThreadService;
+import com.ty.utils.PropertyUtils;
+import com.ty.utils.UserThreadLocal;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 
 @Service
 public class SysUserServiceImpl implements SysUserService {
@@ -61,7 +66,7 @@ public class SysUserServiceImpl implements SysUserService {
             return Result.fail(ErrorCode.TOKEN_ERROR.getCode(), ErrorCode.TOKEN_ERROR.getMsg());
 
         LoginUserVo loginUserVo = new LoginUserVo();
-        loginUserVo.setId(sysUser.getId());
+        loginUserVo.setId(String.valueOf(sysUser.getId()));
         loginUserVo.setNickname(sysUser.getNickname());
         loginUserVo.setAvatar(sysUser.getAvatar());
         loginUserVo.setAccount(sysUser.getAccount());
@@ -93,6 +98,14 @@ public class SysUserServiceImpl implements SysUserService {
         }
         UserVo userVo = new UserVo();
         BeanUtils.copyProperties(sysUser, userVo);
+        userVo.setId(String.valueOf(id));
         return userVo;
+    }
+
+    @Override
+    public boolean modifyUser(Map<String, Object> info) {
+        SysUser sysUser = PropertyUtils.transToModel(SysUser.class, info);
+        sysUser.setId(UserThreadLocal.get().getId());
+        return sysUserMapper.updateById(sysUser) > 0;
     }
 }
