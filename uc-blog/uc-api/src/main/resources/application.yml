@@ -36,6 +36,10 @@ spring:
       #是否缓存控制，防止缓存穿透
       cache-null-values: true
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml

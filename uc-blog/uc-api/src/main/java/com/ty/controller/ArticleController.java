@@ -6,6 +6,8 @@ import com.ty.domain.http.Result;
 import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
 import com.ty.service.ArticleService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("articles")
+@Api(tags = "文章接口")
 public class ArticleController {
 
     @Resource
@@ -27,6 +30,7 @@ public class ArticleController {
     @PostMapping
     @LogAnnotation(module="文章", operator="获取文章列表")
     @Cacheable(value = "list_Article", keyGenerator = "selfKeyGenerate")
+    @ApiOperation("获取文章列表")
     public Result listArticle(@RequestBody PageParams pageParams) {
         return articleService.listArticle(pageParams);
     }
@@ -37,6 +41,7 @@ public class ArticleController {
      */
     @PostMapping("hot")
     @Cacheable(value = "hot_Article", keyGenerator = "selfKeyGenerate")
+    @ApiOperation("获取最热文章列表 5")
     public Result hotArticle() {
         int limit = 5;
         return articleService.hotArticle(limit);
@@ -48,6 +53,7 @@ public class ArticleController {
      */
     @PostMapping("new")
     @Cacheable(value = "new_Article", keyGenerator = "selfKeyGenerate")
+    @ApiOperation("获取最新文章列表 5")
     public Result newArticle() {
         int limit = 5;
         return articleService.newArticle(limit);
@@ -58,6 +64,7 @@ public class ArticleController {
      * @return
      */
     @PostMapping("listArchives")
+    @ApiOperation("获取归档列表")
     public Result listArchives() {
         return articleService.listArchives();
     }
@@ -68,13 +75,14 @@ public class ArticleController {
      * @return
      */
     @PostMapping("view/{id}")
-    public  Result findArticleById(@PathVariable("id") Long articleId){
+    @ApiOperation("根据文章id查询文章详情")
+    public Result findArticleById(@PathVariable("id") Long articleId){
         return articleService.findArticleById(articleId);
 
     }
 
-
     @PostMapping("publish")
+    @ApiOperation("写文章")
     public Result publish(@RequestBody ArticleParam articleParam) {
         return articleService.publish(articleParam);
     }

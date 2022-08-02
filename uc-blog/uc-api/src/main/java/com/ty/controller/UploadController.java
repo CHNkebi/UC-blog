@@ -3,6 +3,8 @@ package com.ty.controller;
 import com.ty.domain.http.Result;
 
 import com.ty.utils.QiniuUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +17,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("upload")
+@Api(tags = "上传接口")
 public class UploadController {
 
     @Resource
     private  QiniuUtils qiniuUtils;
 
     @PostMapping
+    @ApiOperation("图片上传")
     public Result upload(@RequestParam("image") MultipartFile file) {
         //原始文件名称
         String originalFilename = file.getOriginalFilename();
