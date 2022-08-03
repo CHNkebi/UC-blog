@@ -8,7 +8,9 @@ import com.ty.domain.vo.param.PageParams;
 import com.ty.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,7 +31,7 @@ public class ArticleController {
      */
     @PostMapping
     @LogAnnotation(module="文章", operator="获取文章列表")
-    @Cacheable(value = "list_Article", keyGenerator = "selfKeyGenerate")
+    @Cacheable(value = "Article", key = "#pageParams.page")
     @ApiOperation("获取文章列表")
     public Result listArticle(@RequestBody PageParams pageParams) {
         return articleService.listArticle(pageParams);
@@ -40,7 +42,7 @@ public class ArticleController {
      * @return
      */
     @PostMapping("hot")
-    @Cacheable(value = "hot_Article", keyGenerator = "selfKeyGenerate")
+    @Cacheable(value = "Article", key = "'hotArticle'")
     @ApiOperation("获取最热文章列表 5")
     public Result hotArticle() {
         int limit = 5;
@@ -52,7 +54,7 @@ public class ArticleController {
      * @return
      */
     @PostMapping("new")
-    @Cacheable(value = "new_Article", keyGenerator = "selfKeyGenerate")
+    @Cacheable(value = "Article", key = "'newArticle'")
     @ApiOperation("获取最新文章列表 5")
     public Result newArticle() {
         int limit = 5;
@@ -83,8 +85,24 @@ public class ArticleController {
 
     @PostMapping("publish")
     @ApiOperation("写文章")
+    @Caching(evict ={
+            @CacheEvict(value = "Article",key = "1"),
+            @CacheEvict(value = "Article",key = "'newArticle'")
+    } )
     public Result publish(@RequestBody ArticleParam articleParam) {
         return articleService.publish(articleParam);
     }
 
+    @PostMapping("delete")
+    @ApiOperation("删除文章")
+    @CacheEvict(value = "Article", allEntries = true)
+    public Result delete(@RequestBody String articleId) {
+        return articleService.delete(Long.valueOf(articleId));
+    }
+
+    @GetMapping("mylist")
+    @ApiOperation("查看我的文章")
+    public Result listMyArticle(@RequestBody PageParams pageParams) {
+        return articleService.listMyArticle(pageParams);
+    }
 }

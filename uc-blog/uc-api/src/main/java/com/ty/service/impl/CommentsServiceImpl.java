@@ -1,8 +1,10 @@
 package com.ty.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ty.dao.ArticleMapper;
 import com.ty.dao.CommentMapper;
 import com.ty.domain.http.Result;
+import com.ty.domain.pojo.Article;
 import com.ty.domain.pojo.Comment;
 import com.ty.domain.pojo.SysUser;
 import com.ty.domain.vo.CommentVo;
@@ -11,10 +13,12 @@ import com.ty.domain.vo.param.CommentParam;
 import com.ty.service.CommentsService;
 import com.ty.service.SysUserService;
 import com.ty.utils.UserThreadLocal;
+import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +29,8 @@ public class CommentsServiceImpl implements CommentsService {
     private CommentMapper commentMapper;
     @Resource
     private SysUserService sysUserService;
+    @Resource
+    private ArticleMapper articleMapper;
 
     @Override
     public Result commentsByArticleId(Long id) {
@@ -37,9 +43,12 @@ public class CommentsServiceImpl implements CommentsService {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<Comment>();
         queryWrapper.eq(Comment::getArticleId, id);
         queryWrapper.eq(Comment::getLevel, 1);
+        queryWrapper.orderByDesc(Comment::getCreateDate);
         List<Comment> comments = commentMapper.selectList(queryWrapper);
         List<CommentVo> commentVoList = copyList(comments);
-
+        Article article = articleMapper.selectById(id);
+        article.setCommentCounts(comments.size());
+        articleMapper.updateById(article);
         return Result.success(commentVoList);
     }
 
@@ -67,6 +76,20 @@ public class CommentsServiceImpl implements CommentsService {
         return Result.success(null);
     }
 
+    @Override
+    public Result delete(Long id) {
+        boolean res = true;
+        res |= commentMapper.deleteById(id) > 0;
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Comment::getLevel, 2);
+        queryWrapper.eq(Comment::getParentId, id);
+        res |= commentMapper.delete(queryWrapper) >= 0;
+
+        if(res)
+            Result.success(null);
+        return Result.fail(200,"删除失败");
+    }
+
     private List<CommentVo> copyList(List<Comment> comments) {
         List<CommentVo> commentVoList = new ArrayList<>();
         for (Comment comment : comments) {
@@ -78,6 +101,7 @@ public class CommentsServiceImpl implements CommentsService {
     private CommentVo copy(Comment comment) {
         CommentVo commentVo = new CommentVo();
         commentVo.setId(String.valueOf(comment.getId()));
+        commentVo.setCreateDate(new DateTime(comment.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
         BeanUtils.copyProperties(comment, commentVo);
         //作者信息
         Long authorId =  comment.getAuthorId();

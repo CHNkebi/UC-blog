@@ -7,21 +7,24 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ty.dao.ArticleBodyMapper;
 import com.ty.dao.ArticleMapper;
 import com.ty.dao.ArticleTagMapper;
+import com.ty.dao.CommentMapper;
 import com.ty.dao.dos.Archives;
 import com.ty.domain.http.Result;
-import com.ty.domain.pojo.ArticleBody;
-import com.ty.domain.pojo.ArticleTag;
-import com.ty.domain.pojo.SysUser;
+import com.ty.domain.pojo.*;
+import com.ty.domain.query.ViewCountQuery;
 import com.ty.domain.vo.ArticleBodyVo;
 import com.ty.domain.vo.TagVo;
 import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
-import com.ty.domain.pojo.Article;
 import com.ty.domain.vo.ArticleVo;
 import com.ty.service.*;
 import com.ty.utils.UserThreadLocal;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +32,7 @@ import java.util.*;
 
 
 @Service
+@Slf4j
 public class ArticleServiceImpl implements ArticleService {
 
     @Resource
@@ -42,6 +46,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Resource
     private ArticleTagMapper articleTagMapper;
+
+    @Resource
+    private CommentMapper commentMapper;
 
 //    @Override
 //    public Result listArticle(PageParams pageParams) {
@@ -82,7 +89,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Result listArticle(PageParams pageParams) {
-        Page<Article> page = new Page<>(pageParams.getPage(),pageParams.getPageSize());
+        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         IPage<Article> articleIPage = articleMapper.listAticle(
                 page,
                 pageParams.getCategoryId(),
@@ -122,8 +129,10 @@ public class ArticleServiceImpl implements ArticleService {
         return Result.success(archivesList);
     }
 
-    @Resource
-    private ThreadService threadService;
+    //@Resource
+    //private ThreadService threadService;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public Result findArticleById(Long articleId) {
@@ -132,12 +141,42 @@ public class ArticleServiceImpl implements ArticleService {
          * 2. 根据bodyid和categoryid 做关联查询
          */
         Article article = articleMapper.selectById(articleId);
+
+        String redisKey = "VIEW_COUNT" + articleId.toString();
+        Integer viewCounts = article.getViewCounts();
+        redisTemplate.opsForValue().set(redisKey, viewCounts + "");
+        redisTemplate.opsForValue().increment(redisKey, 1);
+
         ArticleVo articleVo = copy(article, true, true, true, true);
 
         //查看文章 新增阅读数 使用线程池 避免影响主线程
-        threadService.updateArticleViewCount(articleMapper, article);
+        //threadService.updateArticleViewCount(articleMapper, article);
 
         return Result.success(articleVo);
+    }
+
+    @Scheduled(cron = "0 30 4 ? * *")//每天凌晨四点半触发
+    public void updateViewCount(){
+        log.info("更新文章阅读数");
+        Set<String> keys = redisTemplate.keys("VIEW_COUNT"+"*");
+        List<ViewCountQuery> list = new ArrayList<>();
+        if(!keys.isEmpty()){
+            for (String key : keys) {
+                ViewCountQuery query = new ViewCountQuery();
+                String ArticleIdStr = key.substring("VIEW_COUNT".length(), key.length());
+                String viewCount = redisTemplate.opsForValue().get(key);
+                log.info("Id{}" + ArticleIdStr);
+                log.info("viewCount{}"+viewCount);
+                long articleId = Long.parseLong(ArticleIdStr);
+                query.setArticleId(articleId);
+                query.setViewCount(Integer.parseInt(viewCount));
+                list.add(query);
+                redisTemplate.delete(key);
+            }
+        }
+        if (list.size()>0) {
+            articleMapper.bathUpdateArticleViewCount(list);
+        }
     }
 
     @Override
@@ -185,6 +224,41 @@ public class ArticleServiceImpl implements ArticleService {
         map.put("id",articleId.toString());//返回string（精度损失）
 
         return Result.success(map);
+    }
+
+    @Override
+    public Result delete(Long articleId) {
+        boolean res = true;
+
+        //删除文章
+        res |= articleMapper.deleteById(articleId) > 0;
+        //删除文章标签
+        LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleTagLambdaQueryWrapper.eq(ArticleTag::getArticleId, articleId);
+        res |= articleTagMapper.delete(articleTagLambdaQueryWrapper) > 0;
+        //删除文章评论
+        LambdaQueryWrapper<Comment> commentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        commentLambdaQueryWrapper.eq(Comment::getArticleId, articleId);
+        res |= commentMapper.delete(commentLambdaQueryWrapper) >= 0;
+
+        if(res)
+            return Result.success(null);
+        return Result.fail(200, "删除失败");
+    }
+
+    @Override
+    public Result listMyArticle(PageParams pageParams) {
+        Long id = UserThreadLocal.get().getId();
+        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
+        IPage<Article> articleIPage = articleMapper.listMyAticle(
+                page,
+                id,
+                pageParams.getCategoryId(),
+                pageParams.getTagId(),
+                pageParams.getYear(),
+                pageParams.getMonth());
+        List<Article> recordes = articleIPage.getRecords();
+        return Result.success(copyList(recordes,true,true));
     }
 
 

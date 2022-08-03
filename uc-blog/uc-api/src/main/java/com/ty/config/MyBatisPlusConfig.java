@@ -12,9 +12,10 @@ public class MyBatisPlusConfig {
 
     //Mybatis-plus分页插件
    @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MybatisPlusInterceptor paginationInterceptor() {
         MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
         mybatisPlusInterceptor.addInnerInterceptor( new PaginationInnerInterceptor());
         return mybatisPlusInterceptor;
     }
+
 }

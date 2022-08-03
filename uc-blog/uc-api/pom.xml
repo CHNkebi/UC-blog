@@ -17,6 +17,7 @@
     </properties>
 
     <dependencies>
+
         <!--spring boot-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -148,6 +149,12 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
+        </dependency>
+
+        <!--springboot整合es-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
 
 

@@ -3,7 +3,9 @@ package com.ty.service;
 import com.ty.domain.http.Result;
 import com.ty.domain.vo.param.ArticleParam;
 import com.ty.domain.vo.param.PageParams;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public interface ArticleService {
     /**
      * 分页查询 文章列表
@@ -45,4 +47,18 @@ public interface ArticleService {
      * @return
      */
     Result publish(ArticleParam articleParam);
+
+    /**
+     * 文章删除
+     * @param articleId
+     * @return
+     */
+    Result delete(Long articleId);
+
+    /**
+     * 查看我的文章
+     * @param pageParams
+     * @return
+     */
+    Result listMyArticle(PageParams pageParams);
 }

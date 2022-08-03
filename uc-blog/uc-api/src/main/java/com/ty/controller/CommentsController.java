@@ -29,4 +29,11 @@ public class CommentsController {
     public Result comment(@RequestBody CommentParam commentParam) {
         return commentsService.commment(commentParam);
     }
+
+    @PostMapping("delete")
+    @ApiOperation("删除评论")
+    public Result delete(@RequestBody String id) {
+        return commentsService.delete(Long.valueOf(id));
+    }
+
 }

@@ -16,9 +16,6 @@ import java.util.ArrayList;
 @EnableSwagger2
 public class SwaggerConfig {
 
-
-
-
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.OAS_30)
@@ -45,7 +42,7 @@ public class SwaggerConfig {
     }
 
 
-    
+
     @Bean
     public Docket createBackApi() {
         return new Docket(DocumentationType.OAS_30)

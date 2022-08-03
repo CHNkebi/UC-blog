@@ -2,7 +2,9 @@ package com.ty.service;
 
 import com.ty.domain.http.Result;
 import com.ty.domain.vo.param.CommentParam;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public interface CommentsService {
 
     /**
@@ -18,4 +20,11 @@ public interface CommentsService {
      * @return
      */
     Result commment(CommentParam commentParam);
+
+    /**
+     * 删除评论
+     * @param id
+     * @return
+     */
+    Result delete(Long id);
 }

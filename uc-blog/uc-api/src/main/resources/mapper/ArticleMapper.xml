@@ -39,4 +39,34 @@
         </where>
         order by weight desc, create_date desc
     </select>
+
+    <update id="bathUpdateArticleViewCount" parameterType="list">
+        update uc_article
+        set view_counts =
+        <foreach collection="list" item="item" separator="" open="CASE id" close="end">
+            when #{item.articleId} then #{item.viewCount}
+        </foreach>
+        where id in
+        <foreach collection="list"  open="(" item="item" close=")" separator=",">
+            #{item.articleId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+    <select id="listMyAticle"  resultMap="articleMap" resultType="com.ty.domain.pojo.Article">
+        select * from uc_article
+        <where>
+            author_id = #{id}
+            <if test="categoryId != null">
+                and category_id=#{categoryId}
+            </if>
+            <if test="tagId != null">
+                and id in (select article_id from uc_article_tag where tag_id=#{tagId})
+            </if>
+            <if test="year != null and year.length>0 and month != null and month.length>0">
+                and (From_UNIXTIME(create_date/1000,'%Y') = #{year} and From_UNIXTIME(create_date/1000,'%m') = #{month})
+            </if>
+        </where>
+        order by weight desc, create_date desc
+    </select>
+
 </mapper>
