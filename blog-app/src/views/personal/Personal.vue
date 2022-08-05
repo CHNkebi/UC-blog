@@ -252,11 +252,10 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = {
-            id: this.login.id,
             password: this.ruleForm.pass,
           };
           // console.log(this.login);
-          userModify(data)
+          userModify(data,this.login.token)
             .then((data) => {
               this.$message.success("修改密码成功！");
               this.updatePasswordDialog = false;

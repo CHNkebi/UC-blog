@@ -27,6 +27,7 @@ public class MebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/test")
                 .addPathPatterns("/comments/create/change")
-                .addPathPatterns("/articles/publish");
+                .addPathPatterns("/articles/publish")
+                .addPathPatterns("/users/**");
     }
 }

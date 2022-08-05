@@ -46,8 +46,12 @@ export function getUserInfo(token) {
 }
 
 //修改用户信息
-export function userModify(data) {
+export function userModify(data, token) {
     return request({
+        headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json'
+        },
         url: '/users/modify',
         method: 'post',
         data: JSON.stringify(data),

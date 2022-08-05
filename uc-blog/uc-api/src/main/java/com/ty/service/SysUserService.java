@@ -3,6 +3,7 @@ package com.ty.service;
 import com.ty.domain.http.Result;
 import com.ty.domain.pojo.SysUser;
 import com.ty.domain.vo.UserVo;
+import com.ty.domain.vo.param.PwdParam;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -58,4 +59,11 @@ public interface SysUserService {
      * @return
      */
     boolean modifyUser(Map<String, Object> info);
+
+    /**
+     * 修改密码
+     * @param pwdParam
+     * @return
+     */
+    Result changePwd(PwdParam pwdParam);
 }

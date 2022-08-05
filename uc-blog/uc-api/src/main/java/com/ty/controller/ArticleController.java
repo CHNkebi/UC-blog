@@ -102,7 +102,7 @@ public class ArticleController {
 
     @GetMapping("mylist")
     @ApiOperation("查看我的文章")
-    public Result listMyArticle(@RequestBody PageParams pageParams) {
+    public Result listMyArticle(PageParams pageParams) {
         return articleService.listMyArticle(pageParams);
     }
 }

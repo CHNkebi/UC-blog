@@ -8,11 +8,13 @@ import com.ty.domain.pojo.SysUser;
 import com.ty.domain.vo.ErrorCode;
 import com.ty.domain.vo.LoginUserVo;
 import com.ty.domain.vo.UserVo;
+import com.ty.domain.vo.param.PwdParam;
 import com.ty.service.LoginService;
 import com.ty.service.SysUserService;
 import com.ty.service.ThreadService;
 import com.ty.utils.PropertyUtils;
 import com.ty.utils.UserThreadLocal;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -107,5 +109,16 @@ public class SysUserServiceImpl implements SysUserService {
         SysUser sysUser = PropertyUtils.transToModel(SysUser.class, info);
         sysUser.setId(UserThreadLocal.get().getId());
         return sysUserMapper.updateById(sysUser) > 0;
+    }
+
+    @Override
+    public Result changePwd(PwdParam pwdParam) {
+        Long id = UserThreadLocal.get().getId();
+        if(DigestUtils.md5Hex(pwdParam.getOldPwd() + "tyuc!@#$%").equals(sysUserMapper.selectById(id).getPassword())) {
+            SysUser sysUser = sysUserMapper.selectById(id);
+            sysUser.setPassword(DigestUtils.md5Hex(pwdParam.getNewPwd() + "tyuc!@#$%"));
+            Result.success(null);
+        }
+        return Result.fail(200, "修改失败");
     }
 }

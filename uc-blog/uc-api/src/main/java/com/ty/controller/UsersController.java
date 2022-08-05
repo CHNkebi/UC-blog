@@ -1,8 +1,11 @@
 package com.ty.controller;
 
 import com.ty.domain.http.Result;
+import com.ty.domain.vo.param.PwdParam;
 import com.ty.service.SysUserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +32,12 @@ public class UsersController {
     public Result modifyUser(@RequestBody Map<String, Object> info) {
         return sysUserService.modifyUser(info) ? Result.success(null) : Result.fail(200, "修改失败");
     }
+
+    @PostMapping("changepwd")
+    @ApiOperation("修改密码")
+    public Result changePwd(@RequestBody PwdParam pwdParam) {
+        return sysUserService.changePwd(pwdParam);
+    }
+
 
 }

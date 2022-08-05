@@ -30,7 +30,7 @@
 
         <el-button
           size="small"
-          v-if="comment.author.nickname == login.account"
+          v-if="comment.author.id == login.id"
           icon="el-icon-delete"
           type="text"
           style="color: #f56c6c"
@@ -164,7 +164,7 @@ export default {
         });
       setTimeout(() => {
         this.$router.go(0);
-      }, 2000);
+      }, 300);
     },
     // 确认删除
     confirmDelete(id) {

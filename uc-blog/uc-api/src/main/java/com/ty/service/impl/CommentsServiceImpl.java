@@ -86,7 +86,7 @@ public class CommentsServiceImpl implements CommentsService {
         res |= commentMapper.delete(queryWrapper) >= 0;
 
         if(res)
-            Result.success(null);
+            return Result.success(null);
         return Result.fail(200,"删除失败");
     }
 

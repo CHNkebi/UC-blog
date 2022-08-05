@@ -16,7 +16,7 @@
         >
           全部
         </el-button>
-        <span>月份签 ：</span>
+        <span>月份签 :</span>
         <ul class="me-month-list">
           <li
             v-for="a in archives"
@@ -67,17 +67,6 @@ export default {
       },
       archives: [],
     };
-  },
-  computed: {
-    title() {
-      return this.currentArchive + " - 文章归档";
-    },
-    currentArchive() {
-      if (this.article.query.year && this.article.query.month) {
-        return `${this.article.query.year}年${this.article.query.month}月`;
-      }
-      return "全部";
-    },
   },
   methods: {
     changeArchive(year, month) {

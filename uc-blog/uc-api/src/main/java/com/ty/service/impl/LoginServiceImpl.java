@@ -24,6 +24,7 @@ public class LoginServiceImpl implements LoginService {
 
     //加密盐
     private static final String slat = "tyuc!@#$%";
+    //sysUserService.changePwd方法引用此slat
 
     @Resource
     private SysUserService sysUserService;
