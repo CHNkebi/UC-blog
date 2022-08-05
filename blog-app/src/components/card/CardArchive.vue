@@ -38,6 +38,7 @@
 
   .me-category-header {
     font-weight: 600;
+    text-align: center;
   }
 
   .me-category-list {
@@ -49,7 +50,6 @@
     width: 40%;
     padding: 4px;
     font-size: 14px;
-    color: #5FB878;
   }
 
   .me-category-item a:hover {

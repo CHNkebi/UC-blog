@@ -24,16 +24,13 @@
     },
     computed: {
       title (){
-        return '留言板 - 码神之路'
+        return '留言板'
       }
     }
   }
 </script>
 
 <style scoped>
-  .me-message {
-  }
-
   .el-container {
     width: 700px;
   }
