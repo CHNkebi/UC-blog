@@ -29,7 +29,6 @@
     },
     methods: {
       imgAdd(pos, $file) {
-        let that = this
         let formdata = new FormData();
         formdata.append('image', $file);
 
@@ -37,13 +36,13 @@
           // 第二步.将返回的url替换到文本原位置![...](./0) -> ![...](url)
           if (data.success) {
 
-            that.$refs.md.$img2Url(pos, data.data);
+            this.$refs.md.$img2Url(pos, data.data);
           } else {
-            that.$message({message: data.msg, type: 'error', showClose: true})
+            this.$message({message: data.msg, type: 'error', showClose: true})
           }
 
         }).catch(err => {
-          that.$message({message: err, type: 'error', showClose: true});
+          this.$message({message: err, type: 'error', showClose: true});
         })
       }
     },

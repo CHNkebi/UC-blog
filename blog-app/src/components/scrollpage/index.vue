@@ -36,14 +36,13 @@
     },
     methods: {
       handleScroll(e) {
-        var that = this
-        if (!that.noData) {
+        if (!this.noData) {
           let curHeight = document.documentElement.scrollTop || document.body.scrollTop
           var scrollPage = document.getElementById('scroll-page');
 
-          if ((curHeight + window.innerHeight >= that.$refs.scroll.offsetHeight + that.offset) && that.isDownDirection()) {
-            if (!that.loading) {
-              that.$emit('load')
+          if ((curHeight + window.innerHeight >= this.$refs.scroll.offsetHeight + this.offset) && this.isDownDirection()) {
+            if (!this.loading) {
+              this.$emit('load')
             }
           }
         }

@@ -6,29 +6,24 @@
 		  
 		  <router-view class="me-container"/>
 		  
-			<base-footer v-show="footerShow"></base-footer>
-		  
-		</el-container>
+	</el-container>
 		
   </div>
   
 </template>
 
 <script>
-import BaseFooter from '@/components/BaseFooter'
-import BaseHeader from '@/views/BaseHeader'
+import BaseHeader from '@/components/BaseHeader'
 
 export default {
   name: 'Home',
   data (){
   	return {
   			activeIndex: '/',
-  			footerShow:true
   	}
   },
   components:{
   	'base-header':BaseHeader,
-  	'base-footer':BaseFooter
   },
   beforeRouteEnter (to, from, next){
   	 next(vm => {
@@ -36,11 +31,6 @@ export default {
   	})
   },
   beforeRouteUpdate (to, from, next) {
-	  if(to.path == '/'){
-	  	this.footerShow = true
-	  }else{
-	  	this.footerShow = false
-	  }
 	  this.activeIndex = to.path
 	  next()
 	}
@@ -48,8 +38,11 @@ export default {
 </script>
 
 <style>
-
-.me-container{
-  margin: 100px auto 140px;
+.me-container {
+  margin: 0 auto;
+  min-height: 520px;
+  width: 80%;
+  padding: 100px 0;
+  background: #f3f3f3;
 }
 </style>

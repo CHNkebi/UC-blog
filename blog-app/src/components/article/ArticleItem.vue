@@ -3,7 +3,6 @@
     <div class="me-article-header">
 
       <a @click="view(id)" class="me-article-title">{{title}}</a>
-      <el-button v-if="weight > 0" class="me-article-icon" type="text">置顶</el-button>
       <span class="me-pull-right me-article-count">
 	    	<i class="me-icon-comment"></i>&nbsp;{{commentCounts}}
 	    </span>
@@ -26,13 +25,12 @@
 	    	<i class="el-icon-time"></i>&nbsp;{{createDate | format}}
 	    </span>
 
+      <slot></slot>
     </div>
   </el-card>
 </template>
 
 <script>
-  import { formatTime } from "../../utils/time";
-
   export default {
     name: 'ArticleItem',
     props: {
@@ -47,7 +45,12 @@
       createDate: String
     },
     data() {
-      return {}
+      return {
+        name:''
+      }
+    },
+    created(){
+      this.name = this.$store.state.name
     },
     methods: {
       view(id) {

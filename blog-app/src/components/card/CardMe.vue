@@ -1,13 +1,9 @@
 <template>
   <el-card>
-    <h1 class="me-author-name">码神之路</h1>
-    <div class="me-author-description">
-      <span><i class="el-icon-location-outline"></i> &nbsp;山西&太原</span>
-      <span><i class="me-icon-job"></i> &nbsp;java技术专家</span>
-    </div>
-    <div class="me-author-tool">
-      <i @click="showTool(qq)" :title="qq.title" class="iconfont icon-qq"></i>
-      <i @click="showTool(bilibili)" :title="bilibili.title" class="iconfont icon-bilibili-fill"></i>
+    <h3 style="text-align:center; color:#5FB878; ">欢迎您！</h3><br>
+    <p class="me-author-name">{{user.nickName}}</p>
+    <div style="padding: 18px 15px 0 0; text-align: center;">
+      <span><i class="el-icon-location-outline"></i> {{city}}</span>
     </div>
   </el-card>
 
@@ -18,49 +14,46 @@
     name: 'CardMe',
     data() {
       return {
-        qq: {title: 'QQ', message: '723663826'},
-        bilibili: {
-          title: '哔哩哔哩',
-          message: '<a target="_blank" href="https://space.bilibili.com/473844125">https://space.bilibili.com/473844125</a>'
-        }
+        city:''
       }
     },
-    methods: {
-      showTool(tool) {
-        this.$message({
-          duration: 0,
-          showClose: true,
-          dangerouslyUseHTMLString: true,
-          message: '<strong>' + tool.message + '</strong>'
+    mounted(){
+      if(this.$store.state.account.length != 0){
+        AMap.plugin("AMap.Geolocation", () => {
+        var geolocation = new AMap.Geolocation({
+          // 是否使用高精度定位，默认：true
+          enableHighAccuracy: false,
+          // 设置定位超时时间，默认：无穷大
+          timeout: 10000,
         });
-      }
-    }
+ 
+          geolocation.getCityInfo((status, res) => {   //只能获取当前用户所在城市和城市的经纬度
+            if (status == "complete") {
+                // console.log("res",res)
+                this.city=res.city;
+            }else{
+           this.city='未查询到所在城市';
+           }
+           })
+      })}
+    },
+    computed: {
+      user() {
+        let login = this.$store.state.account.length != 0
+        let avatar = this.$store.state.avatar
+        let nickName = this.$store.state.name
+        return {
+          login, avatar,nickName
+        }
+      },
+    },
   }
 </script>
 
 <style scoped>
   .me-author-name {
     text-align: center;
-    font-size: 30px;
+    font-size: 22px;
     border-bottom: 1px solid #5FB878;
-  }
-
-  .me-author-description {
-    padding: 8px 0;
-  }
-
-  .me-icon-job {
-    padding-left: 16px;
-  }
-
-  .me-author-tool {
-    text-align: center;
-    padding-top: 10px;
-  }
-
-  .me-author-tool i {
-    cursor: pointer;
-    padding: 4px 10px;
-    font-size: 30px;
   }
 </style>
