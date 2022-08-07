@@ -247,8 +247,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Result listMyArticle(PageParams pageParams) {
-        Long id = UserThreadLocal.get().getId();
+    public Result listArticleById(Long id, PageParams pageParams) {
         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         IPage<Article> articleIPage = articleMapper.listMyAticle(
                 page,

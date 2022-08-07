@@ -56,9 +56,10 @@ public interface ArticleService {
     Result delete(Long articleId);
 
     /**
-     * 查看我的文章
+     * 查看用户id的文章列表
+     * @param id
      * @param pageParams
      * @return
      */
-    Result listMyArticle(PageParams pageParams);
+    Result listArticleById(Long id, PageParams pageParams);
 }

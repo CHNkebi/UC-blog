@@ -100,9 +100,9 @@ public class ArticleController {
         return articleService.delete(Long.valueOf(articleId));
     }
 
-    @GetMapping("mylist")
-    @ApiOperation("查看我的文章")
-    public Result listMyArticle(PageParams pageParams) {
-        return articleService.listMyArticle(pageParams);
+    @GetMapping("listbyid")
+    @ApiOperation("查看用户id的文章")
+    public Result listMyArticle(@RequestBody String id, PageParams pageParams) {
+        return articleService.listArticleById(Long.valueOf(id), pageParams);
     }
 }
