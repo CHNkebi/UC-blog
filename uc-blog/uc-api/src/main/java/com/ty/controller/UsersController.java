@@ -40,4 +40,10 @@ public class UsersController {
     }
 
 
+    @PostMapping("find")
+    @ApiOperation("查看用户信息")
+    public Result findUserById(@RequestBody String id) {
+        return Result.success(sysUserService.findUserById(Long.valueOf(id)));
+    }
+
 }

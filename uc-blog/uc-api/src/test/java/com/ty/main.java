@@ -18,5 +18,6 @@ public class main {
 
    @Test
    public void test1() {
+      System.out.println(DigestUtils.md5("1e89ac99d1ed3a042e9bba0d63d78e89"));
    }
 }

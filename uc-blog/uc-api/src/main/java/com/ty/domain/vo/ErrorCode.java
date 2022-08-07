@@ -3,7 +3,7 @@ package com.ty.domain.vo;
 public enum ErrorCode {
 
     PARAMS_ERROR(10001,"参数有误"),
-    ACCOUNT_PWD_NOT_EXIST(10002,"用户密码不存在喔!"),
+    ACCOUNT_PWD_NOT_EXIST(10002,"用户密码不正确喔!"),
     TOKEN_ERROR(10003,"Token不合法"),
     ACCOUNT_EXIST(10004,"账号已存在"),
     NO_PERMISSION(70001,"无访问权限"),

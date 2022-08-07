@@ -117,8 +117,9 @@ public class SysUserServiceImpl implements SysUserService {
         if(DigestUtils.md5Hex(pwdParam.getOldPwd() + "tyuc!@#$%").equals(sysUserMapper.selectById(id).getPassword())) {
             SysUser sysUser = sysUserMapper.selectById(id);
             sysUser.setPassword(DigestUtils.md5Hex(pwdParam.getNewPwd() + "tyuc!@#$%"));
-            Result.success(null);
+            sysUserMapper.updateById(sysUser);
+            return Result.success(null);
         }
-        return Result.fail(200, "修改失败");
+        return Result.fail(1000, "修改失败");
     }
 }

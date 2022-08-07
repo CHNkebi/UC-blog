@@ -87,7 +87,7 @@ public class CommentsServiceImpl implements CommentsService {
 
         if(res)
             return Result.success(null);
-        return Result.fail(200,"删除失败");
+        return Result.fail(1000,"删除失败");
     }
 
     private List<CommentVo> copyList(List<Comment> comments) {

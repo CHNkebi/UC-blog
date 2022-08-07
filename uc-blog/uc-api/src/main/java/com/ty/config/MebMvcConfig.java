@@ -28,6 +28,7 @@ public class MebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/test")
                 .addPathPatterns("/comments/create/change")
                 .addPathPatterns("/articles/publish")
-                .addPathPatterns("/users/**");
+                .addPathPatterns("/articles/mylist")
+                .addPathPatterns("/users/**").excludePathPatterns("/users/find");
     }
 }

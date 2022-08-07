@@ -23,7 +23,7 @@ public class ArticleVo {
 
     private String createDate;  //创建时间
 
-    private String author;
+    private String authorId;
 
     private ArticleBodyVo body;
 
