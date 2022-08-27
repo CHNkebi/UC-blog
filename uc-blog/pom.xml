@@ -4,6 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>uc-api</module>
+        <module>uc-admin</module>
+        <module>uc-app</module>
     </modules>
 
     <parent>
