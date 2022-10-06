@@ -45,6 +45,19 @@ export function getUserInfo(token) {
     })
 }
 
+//根据id获取用户信息
+export function getUserById(id, token) {
+    return request({
+        headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json'
+        },
+        url: '/users/find',
+        method: 'post',
+        data: id
+    })
+}
+
 //修改用户信息
 export function userModify(data, token) {
     return request({
@@ -54,6 +67,17 @@ export function userModify(data, token) {
         },
         url: '/users/modify',
         method: 'post',
-        data: JSON.stringify(data),
+        data: data
+    })
+}
+//修改用户密码
+export function updatePassword(data, token) {
+    return request({
+        headers: {
+            'Authorization': token,
+        },
+        url: '/users/changepwd',
+        method: 'post',
+        data: data,
     })
 }

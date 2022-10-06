@@ -16,7 +16,7 @@
     </div>
     <div class="me-article-footer">
 	  	<span class="me-article-author">
-	    	<i class="me-icon-author"></i>&nbsp;{{author.nickname}}
+	    	<i class="me-icon-author"></i>&nbsp;{{author}}
 	    </span>
 
       <el-tag v-for="t in tags" :key="t.tagName" size="mini" type="success">{{t.tagName}}</el-tag>

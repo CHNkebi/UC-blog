@@ -17,7 +17,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
 
     //mybatis-plus分页
-    IPage<Article> listAticle(Page<Article> page,
+    IPage<Article> listArticle(Page<Article> page,
                               Long categoryId,
                               Long tagId,
                               String year,
@@ -30,7 +30,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
     void bathUpdateArticleViewCount(List<ViewCountQuery> list);
 
 
-    IPage<Article> listMyAticle(Page<Article> page,
+    IPage<Article> listMyArticle(Page<Article> page,
                                 Long id,
                                 Long categoryId,
                                 Long tagId,

@@ -31,7 +31,7 @@ public class ArticleController {
      */
     @PostMapping
     @LogAnnotation(module="文章", operator="获取文章列表")
-    @Cacheable(value = "Article", key = "#pageParams.page")
+    //@Cacheable(value = "Article", key = "#pageParams.page")
     @ApiOperation("获取文章列表")
     public Result listArticle(@RequestBody PageParams pageParams) {
         return articleService.listArticle(pageParams);
@@ -86,7 +86,7 @@ public class ArticleController {
     @PostMapping("publish")
     @ApiOperation("写文章")
     @Caching(evict ={
-            @CacheEvict(value = "Article",key = "1"),
+           //@CacheEvict(value = "Article",key = "1"),
             @CacheEvict(value = "Article",key = "'newArticle'")
     } )
     public Result publish(@RequestBody ArticleParam articleParam) {
@@ -100,9 +100,15 @@ public class ArticleController {
         return articleService.delete(Long.valueOf(articleId));
     }
 
-    @GetMapping("listbyid")
+    @PostMapping("listbyid")
     @ApiOperation("查看用户id的文章")
     public Result listMyArticle(@RequestBody String id, PageParams pageParams) {
         return articleService.listArticleById(Long.valueOf(id), pageParams);
+    }
+
+    @PostMapping("search")
+    @ApiOperation("搜索文章")
+    public Result searchArticle(@RequestBody String name, PageParams pageParams) {
+        return articleService.searchArticleByName(name, pageParams);
     }
 }

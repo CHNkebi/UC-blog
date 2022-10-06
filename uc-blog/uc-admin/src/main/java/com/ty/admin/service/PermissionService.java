@@ -7,7 +7,7 @@ import com.ty.admin.model.params.PageParam;
 import com.ty.admin.model.pojo.Permission;
 import com.ty.admin.model.vo.PageResult;
 import com.ty.admin.model.vo.Result;
-import com.ty.utils.PropertyUtils;
+import com.ty.admin.utils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

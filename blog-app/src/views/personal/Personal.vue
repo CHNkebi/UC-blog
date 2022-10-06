@@ -6,40 +6,44 @@
         <div class="me-person-up">
           <!-- 头像区域 -->
           <div class="me-avatar-box">
-            <img :src="login.avatar" />
+            <img :src="author.avatar" />
           </div>
           <!-- 简介区 -->
           <div class="me-person-info">
             <div class="me-person-info-1">
-              <span>{{ login.account }}</span>
-              <el-button
-                v-if="!isFollow"
-                icon="el-icon-plus"
-                class="me-follow-btn"
-                type="primary"
-                size="small"
-                round
-                @click="isFollow = !isFollow"
-                >关注</el-button
-              >
-              <el-button
-                v-else
-                icon="el-icon-close"
-                class="me-follow-btn"
-                type="warning"
-                size="small"
-                round
-                @click="isFollow = !isFollow"
-                >取关</el-button
-              >
-              <el-button
-                size="mini"
-                round
-                class="me-edit-btn"
-                icon="el-icon-document"
-                @click="dialogVisible = true"
-                >编辑资料</el-button
-              >
+              <span>{{ author.nickname }}</span>
+              <template v-if="author.id == login.id">
+                <el-button
+                  size="mini"
+                  round
+                  class="me-edit-btn"
+                  icon="el-icon-document"
+                  @click="dialogVisible = true"
+                  >编辑资料</el-button
+                >
+              </template>
+              <template v-else>
+                <el-button
+                  v-if="!isFollow"
+                  icon="el-icon-plus"
+                  class="me-follow-btn"
+                  type="primary"
+                  size="small"
+                  round
+                  @click="isFollow = !isFollow"
+                  >关注</el-button
+                >
+                <el-button
+                  v-else
+                  icon="el-icon-close"
+                  class="me-follow-btn"
+                  type="warning"
+                  size="small"
+                  round
+                  @click="isFollow = !isFollow"
+                  >取关</el-button
+                >
+              </template>
             </div>
             <div class="me-person-info-2">
               <ul>
@@ -54,9 +58,7 @@
             </div>
           </div>
         </div>
-        <div class="me-person-down">
-          个性签名：“Freedom is the oxygen of soul💚”
-        </div>
+        <div class="me-person-down">个性签名 :{{ form.status }}</div>
       </el-header>
 
       <!-- 主体 -->
@@ -71,7 +73,7 @@
           </div>
         </el-aside>
         <el-main class="me-articles me-area">
-          <article-scroll-page></article-scroll-page>
+          <my-scroll-page v-bind="myArticles"></my-scroll-page>
         </el-main>
       </el-container>
 
@@ -88,7 +90,7 @@
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
               >
-                <img :src="login.avatar" v-bind="form.avatar" />
+                <img :src="author.avatar" v-bind="form.avatar" />
               </el-upload>
               <span>点击头像即可修改头像</span>
             </el-form-item>
@@ -98,9 +100,12 @@
             </el-form-item>
             <el-form-item label="昵称" style="margin-right: 150px">
               <el-input
-                v-model="form.nickName"
+                v-model="form.nickname"
                 :disabled="!isUpdate"
               ></el-input>
+            </el-form-item>
+            <el-form-item label="个性签名" style="margin-right: 150px">
+              <el-input v-model="form.status" :disabled="!isUpdate"></el-input>
             </el-form-item>
           </el-form>
           <div style="text-align: center">
@@ -111,7 +116,9 @@
               >修改个人信息</el-button
             >
             <template v-else-if="isUpdate">
-              <el-button type="primary" @click="update('form')">保存</el-button>
+              <el-button type="primary" @click="updateInfo('form')"
+                >保存</el-button
+              >
               <el-button @click="isUpdate = !isUpdate">取消</el-button>
             </template>
             <br />
@@ -137,6 +144,13 @@
             class="demo-ruleForm"
             style="margin-right: 30px"
           >
+            <el-form-item label="旧密码" prop="old">
+              <el-input
+                type="password"
+                v-model="ruleForm.old"
+                autocomplete="off"
+              ></el-input>
+            </el-form-item>
             <el-form-item label="新密码" prop="pass">
               <el-input
                 type="password"
@@ -166,10 +180,10 @@
 
 
 <script>
-import { userModify } from "../../api/login";
+import { userModify, updatePassword, getUserById } from "../../api/login";
 import CardArticle from "@/components/card/CardArticle";
-import ArticleScrollPage from "@/views/common/ArticleScrollPage";
-import { getHotArtices } from "@/api/article";
+import menu from "@/views/common/menu";
+import { getHotArtices, getMyArtices } from "@/api/article";
 
 export default {
   data() {
@@ -193,15 +207,26 @@ export default {
       }
     };
     return {
+      author: {}, //该主页的博主
       login: this.$store.state,
       myArticles: [],
       hotArticles: [],
       dialogVisible: false,
+      page: {
+        categoryId:'',
+        month:'',
+        page: 1,
+        pageSize: 5,
+        tagId:'',
+        year:''
+      },
       form: {
         account: "",
         nickName: "",
+        status: "",
       },
       ruleForm: {
+        old: "",
         pass: "",
         checkPass: "",
       },
@@ -209,19 +234,38 @@ export default {
       isFollow: false,
       updatePasswordDialog: false,
       rules: {
-        pass: [{ validator: validatePass, trigger: "blur" }],
-        checkPass: [{ validator: validatePass2, trigger: "blur" }],
+        old: [{ required: true, message: "请输入当前密码", trigger: "blur" }],
+        pass: [
+          { validator: validatePass, trigger: "blur" },
+          { min: 6, message: "不能少于6个字符", trigger: "blur" },
+        ],
+        checkPass: [
+          { validator: validatePass2, trigger: "blur" },
+          { min: 6, message: "不能少于6个字符", trigger: "blur" },
+        ],
       },
     };
   },
   components: {
     "card-article": CardArticle,
-    ArticleScrollPage,
+    "my-scroll-page":menu,
   },
   mounted() {
     this.init();
   },
   methods: {
+    // 获取我的文章
+    getMyArtices() {
+      getMyArtices(this.page, this.login.token)
+        .then((data) => {
+          this.myArticles = data.data;
+        })
+        .catch((error) => {
+          if (error != "error") {
+            this.$message.error("加载文章失败");
+          }
+        });
+    },
     // 获取最热文章列表
     getHotArtices() {
       getHotArtices()
@@ -247,21 +291,25 @@ export default {
         this.$refs[formName].resetFields();
       });
     },
-
+    // 修改密码
     updatePassword(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = {
-            password: this.ruleForm.pass,
+            oldPwd: this.ruleForm.old,
+            newPwd: this.ruleForm.pass,
           };
-          // console.log(this.login);
-          userModify(data,this.login.token)
+          updatePassword(data, this.login.token)
             .then((data) => {
-              this.$message.success("修改密码成功！");
+              if (data.success) {
+                this.$message.success("修改成功！");
+              } else {
+                this.$message.error("修改失败");
+              }
               this.updatePasswordDialog = false;
             })
             .catch((error) => {
-              if (error !== "error") this.$message("修改失败");
+              if (error !== "error") this.$message.error("修改失败");
             });
         } else {
           this.$message.error("请输入内容！");
@@ -269,11 +317,52 @@ export default {
         }
       });
     },
+    //更新用户信息
+    updateInfo(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.form);
+          userModify(this.form, this.login.token)
+            .then(() => {
+              this.$message.success("修改成功！");
+            })
+            .catch((error) => {
+              if (error !== "error") this.$message.error("修改失败");
+            });
+        } else {
+          this.$message.error("请输入内容！");
+          return false;
+        }
+      });
+      this.isUpdate = !this.isUpdate;
+      // this.dialogVisible = false;
+    },
+    //获取该主页用户信息
+    getUser() {
+      let id = this.$route.params.id;
+      getUserById(id, this.login.token)
+        .then((data) => {
+          if (data.success) {
+            this.author = data.data;
+            this.form = this.author;
+            // console.log(data.data)
+          } else {
+            this.$message({
+              type: "error",
+              message: data.msg,
+              showClose: true,
+            });
+          }
+        })
+        .catch((error) => {
+          if (error != "error") this.$message.error("加载错误");
+        });
+    },
 
     init() {
-      this.form.account = this.login.account;
-      this.form.nickName = this.login.name;
+      this.getUser();
       this.getHotArtices();
+      this.getMyArtices();
     },
   },
 };
@@ -316,7 +405,7 @@ export default {
             sans-serif;
           .me-follow-btn {
             position: absolute;
-            top:6px;
+            top: 6px;
             right: 0px;
           }
           .me-edit-btn {

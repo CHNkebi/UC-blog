@@ -62,4 +62,11 @@ public interface ArticleService {
      * @return
      */
     Result listArticleById(Long id, PageParams pageParams);
+
+    /**
+     * 根据名字搜索文章
+     * @param name
+     * @return
+     */
+    Result searchArticleByName(String name, PageParams pageParams);
 }

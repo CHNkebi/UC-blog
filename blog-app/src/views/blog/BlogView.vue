@@ -7,10 +7,10 @@
           <h1 class="me-view-title">{{ article.title }}</h1>
 
           <!-- 文章简介 -->
-          <div class="me-view-author">
-            <a @click="toInfo(article.author)">
-              <img class="me-view-picture" :src="article.author.avatar" />
-              <span>{{ article.author }}</span>
+          <div class="me-view-author" v-if="show">
+            <a @click="toInfo(article.authorId)">
+              <img class="me-view-picture" :src="author.avatar" />
+              <span>{{ author.nickname }}</span>
             </a>
             <el-button
               v-if="!isFollow"
@@ -181,20 +181,23 @@ import MarkdownEditor from "@/components/markdown/MarkdownEditor";
 import CommmentItem from "@/components/comment/CommentItem";
 import { viewArticle, deleteArticleById } from "@/api/article";
 import { getCommentsByArticle, publishComment } from "@/api/comment";
-
-import default_avatar from "@/assets/img/default_avatar.png";
+import { getUserById } from "../../api/login";
 
 export default {
   name: "BlogView",
   data() {
     return {
+      show:false,//解决异步数据加载问题
       article: {
         id: "",
         title: "",
         commentCounts: 0,
         viewCounts: 0,
         summary: "",
-        author: {},
+        author: {
+          avatar: "/static/user/default.png",
+          nickname: "加载中...",
+        },
         tags: [],
         category: {},
         createDate: "",
@@ -205,6 +208,7 @@ export default {
           defaultOpen: "preview",
         },
       },
+      default_avatar: "@/assets/img/default_avatar.png",
       isFavorite: true,
       isFollow: false,
       comments: [],
@@ -218,19 +222,10 @@ export default {
   created() {
     this.getArticle();
   },
-
-  computed: {
-    avatar() {
-      let avatar = this.$store.state.avatar;
-
-      if (avatar != null) {
-        return avatar;
-      }
-      return default_avatar;
-    },
-    title() {
-      return `${this.article.title} - 文章`;
-    },
+  mounted() {
+    setTimeout(() => {
+      this.getUser(this.article.authorId);//加载用户信息
+    }, 300);
   },
 
   watch: {
@@ -253,7 +248,6 @@ export default {
         .then((data) => {
           Object.assign(this.article, data.data);
           this.article.editor.value = data.data.body.content;
-
           this.getCommentsByArticle();
         })
         .catch((error) => {
@@ -264,6 +258,26 @@ export default {
               showClose: true,
             });
           }
+        });
+    },
+    //加载用户信息
+    getUser(id) {
+      getUserById(id, this.$store.state.token)
+        .then((data) => {
+          if (data.success) {
+            this.author = data.data;
+            this.show=true
+            // console.log(this.author);
+          } else {
+            this.$message({
+              type: "error",
+              message: data.msg,
+              showClose: true,
+            });
+          }
+        })
+        .catch((error) => {
+          if (error != "error") this.$message.error("加载错误");
         });
     },
 
@@ -382,6 +396,11 @@ export default {
             });
           }
         });
+    },
+
+    //跳转博主主页
+    toInfo(id) {
+      this.$router.push({path: `/personal/${id}`});
     },
   },
   components: {

@@ -17,10 +17,12 @@ export function getArticles(query, page) {
 }
 
 //获取我的文章
-export function getMyArchives() {
+export function getMyArtices(data, token) {
     return request({
+        headers: { 'Authorization': token },
         url: '/articles/mylist',
-        method: 'get'
+        method: 'get',
+        data: data
     })
 }
 
@@ -43,6 +45,7 @@ export function getNewArtices() {
 // 根据文章id查询文章详情
 export function viewArticle(id) {
     return request({
+        headers: { 'Content-type': 'application/json' },
         url: `/articles/view/${id}`,
         method: 'post'
     })

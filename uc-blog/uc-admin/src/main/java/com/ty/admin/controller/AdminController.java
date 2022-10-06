@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("admin")
-@Api(tags = "后台管理借口")
+@Api(tags = "后台管理接口")
 public class AdminController {
 
     @Autowired

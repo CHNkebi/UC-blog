@@ -55,7 +55,7 @@
         mode="horizontal"
         active-text-color="#5FB878"
       >
-        <template v-if="!user.login">
+        <template v-if="!user.name">
           <el-menu-item index="/login">
             <el-button type="text">登录</el-button>
           </el-menu-item>
@@ -70,9 +70,9 @@
               <img
                 class="me-header-avatar"
                 :src="user.avatar"
-              />&nbsp;&nbsp;&nbsp;{{ user.nickName }}
+              />&nbsp;&nbsp;&nbsp;{{ user.name }}
             </template>
-            <el-menu-item index @click="personal" style="color:#666"
+            <el-menu-item index @click="personal(user.id)" style="color:#666"
               ><i class="el-icon-document"></i>个人</el-menu-item
             >
             <el-menu-item index @click="logout" style="color:#F56C6C"
@@ -99,21 +99,10 @@ export default {
   },
   data() {
     return {
-      search: "",
+      user:this.$store.state,
       articles: [],
+      search:'',
     };
-  },
-  computed: {
-    user() {
-      let login = this.$store.state.account.length != 0;
-      let avatar = this.$store.state.avatar;
-      let nickName = this.$store.state.name;
-      return {
-        login,
-        avatar,
-        nickName,
-      };
-    },
   },
   methods: {
     logout() {
@@ -128,8 +117,8 @@ export default {
           }
         });
     },
-    personal() {
-      this.$router.push("/personal/document");
+    personal(id) {
+      this.$router.push({path: `/personal/${id}`});
     },
     // querySearchAsync(queryString, cb) {
     //   searchArticle(this.search).then((res) => {

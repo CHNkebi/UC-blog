@@ -2,6 +2,7 @@ package com.ty.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ty.dao.ArticleBodyMapper;
@@ -90,7 +91,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Result listArticle(PageParams pageParams) {
         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
-        IPage<Article> articleIPage = articleMapper.listAticle(
+        IPage<Article> articleIPage = articleMapper.listArticle(
                 page,
                 pageParams.getCategoryId(),
                 pageParams.getTagId(),
@@ -249,7 +250,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Result listArticleById(Long id, PageParams pageParams) {
         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
-        IPage<Article> articleIPage = articleMapper.listMyAticle(
+        IPage<Article> articleIPage = articleMapper.listMyArticle(
                 page,
                 id,
                 pageParams.getCategoryId(),
@@ -258,6 +259,19 @@ public class ArticleServiceImpl implements ArticleService {
                 pageParams.getMonth());
         List<Article> recordes = articleIPage.getRecords();
         return Result.success(copyList(recordes,true,true));
+    }
+
+    @Override
+    public Result searchArticleByName(String name, PageParams pageParams) {
+        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
+        QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("title",name);
+        queryWrapper.orderByAsc("view_counts");
+        queryWrapper.orderByDesc("weight","create_date");
+        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
+        List<Article> records = articlePage.getRecords();
+        List<ArticleVo> articleVoList = copyList(records, true, true);
+        return Result.success(articleVoList);
     }
 
 

@@ -2,7 +2,7 @@
   <div class="me-view-comment-item">
     <!-- 评论主用户 -->
     <div class="me-view-comment-author">
-      <a>
+      <a @click="toInfo(comment.author)">
         <!-- <img class="me-view-picture" :src="comment.author.avatar" /> -->
         <span class="me-view-avatar"
           ><img class="me-view-picture" src="../../assets/img/bg.jpg"
@@ -223,6 +223,10 @@ export default {
         content: "",
       };
     },
+    //跳转博主主页
+    toInfo(author){
+      this.$router.push({path: `/personal/${author.id}`,query: author});
+    }
   },
 };
 </script>

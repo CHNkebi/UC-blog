@@ -1,33 +1,22 @@
 <template>
-  <div>
-    <scroll-page
-      :loading="loading"
-      :offset="offset"
-      :no-data="noData"
-      v-on:load="load"
-    >
-      <article-item v-for="a in articles" :key="a.id" v-bind="a">
-        <span class="me-aticle-delete">
-          <el-button
-            @click="deleteArticle(a)"
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-            circle
-          ></el-button>
-        </span>
-      </article-item>
-    </scroll-page>
-  </div>
+  <scroll-page
+    :loading="loading"
+    :offset="offset"
+    :no-data="noData"
+    v-on:load="load"
+  >
+    <article-item v-for="a in articles" :key="a.id" v-bind="a"></article-item>
+  </scroll-page>
 </template>
 
 <script>
+import anime from "animejs";
 import ArticleItem from "@/components/article/ArticleItem";
 import ScrollPage from "@/components/scrollpage";
-import { getMyArchives } from "../../api/article";
+import { getMyArtices } from "@/api/article";
 
 export default {
-  name: "myMenu",
+  name: "menu",
   props: {
     offset: {
       type: Number,
@@ -52,7 +41,7 @@ export default {
         this.noData = false;
         this.articles = [];
         this.innerPage.pageNumber = 1;
-        this.getArticles();
+        this.load();
       },
       deep: true,
     },
@@ -61,22 +50,20 @@ export default {
         this.noData = false;
         this.articles = [];
         this.innerPage = this.page;
-        this.getArticles();
+        this.load();
       },
       deep: true,
     },
   },
   created() {
-    this.init();
-    this.getArticles();
+    this.load();
   },
   data() {
     return {
-      authorId: "",
       loading: false,
       noData: false,
       innerPage: {
-        pageSize: 5,
+        pageSize: 10,
         pageNumber: 1,
       },
       articles: [],
@@ -86,9 +73,16 @@ export default {
     load() {
       this.getArticles();
     },
-    init() {
-      // 加载用户缓存
-      this.authorId = this.$store.state.id;
+    // 列表入场动画
+    listAnimate() {
+      anime({
+        targets: ".me-articles .me-area",
+        translateX: [-20, 0],
+        opacity: [0, 1],
+        easing: "linear",
+        duration: 150,
+        delay: anime.stagger(150), // 每个元素的延迟增加150毫秒。
+      });
     },
     view(id) {
       this.$router.push({ path: `/view/${id}` });
@@ -96,38 +90,28 @@ export default {
     getArticles() {
       this.loading = true;
 
-      getMyArchives(this.query, this.innerPage)
-        .then((res) => {
-          let newArticles = res.data;
+      // 获取我的文章
+      getMyArtices(this.innerPage, this.$store.state.token)
+        .then((data) => {
+          let newArticles = data.data;
           if (newArticles && newArticles.length > 0) {
             this.innerPage.pageNumber += 1;
-            for (var i in newArticles) {
-              if (newArticles[i].author.id == this.authorId) {
-                // console.log(newArticles[i])
-                this.articles.push(newArticles[i]);
-              }
-            }
+            this.articles = this.articles.concat(newArticles);
+            this.$nextTick(() => {
+              this.listAnimate(); //展示动画
+            });
           } else {
             this.noData = true;
           }
         })
         .catch((error) => {
           if (error !== "error") {
-            this.$message({
-              type: "error",
-              message: "您暂无已发表博客",
-              showClose: true,
-            });
+            this.$message.error("加载文章失败");
           }
         })
         .finally(() => {
           this.loading = false;
         });
-    },
-
-    deleteArticle(archive) {
-      //删除博客-待接口
-      console.log(archive);
     },
   },
   components: {
@@ -139,19 +123,10 @@ export default {
 
 <style scoped>
 .el-card {
-  border-radius: 0;
+  border-radius: 10px;
 }
 
 .el-card:not(:first-child) {
-  margin-top: 10px;
-}
-
-#scroll-page {
-  padding: 0 30px;
-  width: 800px;
-}
-
-.me-aticle-delete {
-  float: right;
+  margin-top: 20px;
 }
 </style>

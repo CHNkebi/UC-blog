@@ -46,13 +46,8 @@ const router = new VueRouter({
 
                 },
                 {
-                    path: '/personal',
+                    path: '/personal/:id?',
                     component: r => require.ensure([], () => r(require('@/views/personal/Personal')), 'personal'),
-                    children: [{
-                        path: '/personal/document',
-                        component: r => require.ensure([], () => r(require('@/views/personal/document')), 'document')
-                    }, ]
-
                 },
                 {
                     path: '/archives/:year?/:month?',
