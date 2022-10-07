@@ -47,13 +47,13 @@
             </div>
             <div class="me-person-info-2">
               <ul>
-                <li>{{}}文章</li>
+                <li>8 文章</li>
                 |
-                <li>{{}}被收藏</li>
+                <li>2 被收藏</li>
                 |
-                <li>{{}}粉丝</li>
+                <li>3 粉丝</li>
                 |
-                <li>{{}}关注</li>
+                <li>0 关注</li>
               </ul>
             </div>
           </div>
@@ -73,7 +73,18 @@
           </div>
         </el-aside>
         <el-main class="me-articles me-area">
-          <my-scroll-page v-bind="myArticles"></my-scroll-page>
+          <scroll-page
+            :loading="loading"
+            :offset="offset"
+            :no-data="noData"
+            v-on:load="load"
+          >
+            <article-item
+              v-for="a in myArticles"
+              :key="a.id"
+              v-bind="a"
+            ></article-item>
+          </scroll-page>
         </el-main>
       </el-container>
 
@@ -180,9 +191,11 @@
 
 
 <script>
+import anime from "animejs";
 import { userModify, updatePassword, getUserById } from "../../api/login";
 import CardArticle from "@/components/card/CardArticle";
-import menu from "@/views/common/menu";
+import ArticleItem from "@/components/article/ArticleItem";
+import ScrollPage from "@/components/scrollpage";
 import { getHotArtices, getMyArtices } from "@/api/article";
 
 export default {
@@ -213,12 +226,12 @@ export default {
       hotArticles: [],
       dialogVisible: false,
       page: {
-        categoryId:'',
-        month:'',
+        categoryId: "",
+        month: "",
         page: 1,
         pageSize: 5,
-        tagId:'',
-        year:''
+        tagId: "",
+        year: "",
       },
       form: {
         account: "",
@@ -248,17 +261,32 @@ export default {
   },
   components: {
     "card-article": CardArticle,
-    "my-scroll-page":menu,
+    "article-item": ArticleItem,
+    "scroll-page": ScrollPage,
   },
   mounted() {
     this.init();
   },
   methods: {
-    // 获取我的文章
+    // 列表入场动画
+    listAnimate() {
+      anime({
+        targets: ".me-articles .me-area",
+        translateX: [-20, 0],
+        opacity: [0, 1],
+        easing: "linear",
+        duration: 150,
+        delay: anime.stagger(150), // 每个元素的延迟增加150毫秒。
+      });
+    },
+    // 获取文章
     getMyArtices() {
-      getMyArtices(this.page, this.login.token)
+      getMyArtices(this.$route.params.id, this.login.token)
         .then((data) => {
           this.myArticles = data.data;
+          this.$nextTick(() => {
+            this.listAnimate(); //展示动画
+          });
         })
         .catch((error) => {
           if (error != "error") {
@@ -459,5 +487,12 @@ export default {
       border-radius: 50%;
     }
   }
+}
+.el-card {
+  border-radius: 10px;
+}
+
+.el-card:not(:first-child) {
+  margin-top: 20px;
 }
 </style>

@@ -19,9 +19,9 @@ export function getArticles(query, page) {
 //获取我的文章
 export function getMyArtices(data, token) {
     return request({
-        headers: { 'Authorization': token },
-        url: '/articles/mylist',
-        method: 'get',
+        headers: { 'Authorization': token, 'Content-Type': 'text/plain' },
+        url: '/articles/listbyid',
+        method: 'post',
         data: data
     })
 }
@@ -64,9 +64,12 @@ export function publishArticle(article, token) {
 // 搜索文章
 export function searchArticle(search) {
     return request({
+        headers: {
+            'Content-Type': 'text/plain'
+        },
         url: '/articles/search',
         method: 'post',
-        data: { "search": search }
+        data: search
     })
 }
 

@@ -25,7 +25,7 @@ public class UploadController {
 
     @PostMapping
     @ApiOperation("图片上传")
-    public Result upload(@RequestParam("image") MultipartFile file) {
+    public Result upload(@RequestParam("file") MultipartFile file) {
         //原始文件名称
         String originalFilename = file.getOriginalFilename();
         //唯一文件名称

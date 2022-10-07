@@ -21,7 +21,9 @@
         <el-menu-item index="/">首页</el-menu-item>
         <el-submenu>
           <template slot="title">笔记中心</template>
-          <el-menu-item style="display:block" index="/all">所有笔记</el-menu-item>
+          <el-menu-item style="display: block" index="/all"
+            >所有笔记</el-menu-item
+          >
           <el-menu-item index="/category/all">笔记分类</el-menu-item>
           <el-menu-item index="/archives">笔记归档</el-menu-item>
         </el-submenu>
@@ -42,9 +44,7 @@
         @focus="focusAnimate"
       >
       </el-input>
-      <el-button round type="primary" @click="toSearch()">
-        搜索
-      </el-button>
+      <el-button round type="primary" @click="toSearch()"> 搜索 </el-button>
     </el-col>
 
     <!-- 个人导航栏 -->
@@ -72,10 +72,10 @@
                 :src="user.avatar"
               />&nbsp;&nbsp;&nbsp;{{ user.name }}
             </template>
-            <el-menu-item index @click="personal(user.id)" style="color:#666"
+            <el-menu-item index @click="personal(user.id)" style="color: #666"
               ><i class="el-icon-document"></i>个人</el-menu-item
             >
-            <el-menu-item index @click="logout" style="color:#F56C6C"
+            <el-menu-item index @click="logout" style="color: #f56c6c"
               ><i class="el-icon-back"></i>退出</el-menu-item
             >
           </el-submenu>
@@ -99,9 +99,9 @@ export default {
   },
   data() {
     return {
-      user:this.$store.state,
+      user: this.$store.state,
       articles: [],
-      search:'',
+      search: "",
     };
   },
   methods: {
@@ -118,30 +118,37 @@ export default {
         });
     },
     personal(id) {
-      this.$router.push({path: `/personal/${id}`});
+      this.$router.push({ path: `/personal/${id}` });
     },
-    // querySearchAsync(queryString, cb) {
-    //   searchArticle(this.search).then((res) => {
-    //     if (res.success) {
-    //       var results = [];
-    //       for (const item of res.data) {
-    //         results.push({
-    //           id: item.id,
-    //           value: item.title,
-    //         });
-    //       }
-    //       cb(results);
-    //     }
-    //   });
-    // },
-    toSearch() {
-      console.log("搜索请求" + this.search);
-      this.$router.push({
-        path: "/search",
-        query:{
-          search: this.search,
+    querySearchAsync(queryString, cb) {
+      searchArticle(this.search).then((res) => {
+        if (res.success) {
+          var results = [];
+          for (const item of res.data) {
+            results.push({
+              id: item.id,
+              value: item.title,
+            });
+          }
+          cb(results);
         }
       });
+    },
+    toSearch() {
+      if (this.search != "") {
+        this.$router.push({
+          path: "/search",
+          query: {
+            search: this.search,
+          },
+        });
+      } else {
+        this.$message({
+          message: "请输入内容！",
+          type: "error",
+          showClose: true,
+        });
+      }
     },
 
     // 入场动画
